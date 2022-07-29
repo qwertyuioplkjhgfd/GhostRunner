@@ -84,6 +84,10 @@ public class GhostInfo {
         return ghostData;
     }
 
+    public void setGhostData(GhostData ghostData) {
+        this.ghostData = ghostData;
+    }
+
     private InGameTimer getTimer() {
         return InGameTimer.getInstance();
     }

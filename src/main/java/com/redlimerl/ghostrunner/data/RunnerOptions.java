@@ -6,7 +6,6 @@ import com.redlimerl.speedrunigt.option.OptionArgument;
 import net.minecraft.util.Identifier;
 
 public class RunnerOptions {
-
     public static final OptionArgument<Boolean> TOGGLE_GHOST = new OptionArgument<Boolean>(new Identifier(GhostRunner.MOD_ID, "toggle_ghost"), true) {
         @Override
         public Boolean valueFromString(String s) {

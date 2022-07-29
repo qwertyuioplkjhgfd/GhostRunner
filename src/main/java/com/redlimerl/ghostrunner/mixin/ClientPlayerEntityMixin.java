@@ -30,13 +30,18 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "tick()V", at = @At("TAIL"))
     private void onTick(CallbackInfo ci) {
+        //recording
         if (InGameTimer.getInstance().getStatus() == TimerStatus.RUNNING) {
             GhostInfo.INSTANCE.update(new PlayerLog(this));
-            ReplayGhost.tickGhost();
             if (world.getDifficulty().getId() < GhostRunner.MINIMUM_DIFFICULTY.getId()) {
-                GhostRunner.MINIMUM_DIFFICULTY = world.getDifficulty();
-                GhostInfo.INSTANCE.getGhostData().setDifficulty(GhostRunner.MINIMUM_DIFFICULTY);
+                if (GhostInfo.INSTANCE.getGhostData() != null) {
+                    GhostRunner.MINIMUM_DIFFICULTY = world.getDifficulty();
+                    GhostInfo.INSTANCE.getGhostData().setDifficulty(GhostRunner.MINIMUM_DIFFICULTY);
+                }
             }
         }
+
+        //replaying
+        ReplayGhost.tickGhost();
     }
 }

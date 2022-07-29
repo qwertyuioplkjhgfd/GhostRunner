@@ -20,7 +20,7 @@ public class MinecraftClientMixin {
 
     @Inject(method = "isFabulousGraphicsOrBetter", at = @At("HEAD"), cancellable = true)
     private static void isFabulousGraphicsOrBetter(CallbackInfoReturnable<Boolean> cir) {
-        if (GhostRenderFix.isRender) cir.setReturnValue(true);
+//        if (GhostRenderFix.isRender) cir.setReturnValue(true);
     }
 
     @Inject(method = "createWorld", at = @At("TAIL"))

@@ -108,6 +108,8 @@ public class ReplayGhost {
         }
     }
 
+    //TODO sound
+
     public static void tickGhost() {
         if (ghostList.isEmpty()) return;
 
@@ -116,36 +118,36 @@ public class ReplayGhost {
         if (client.player == null || client.player.clientWorld == null) return;
         ClientWorld playerWorld = client.player.clientWorld;
 
-        for (ReplayGhost replay : ghostList) {
-            PlayerLog playerLog = replay.ghostInfo.pollPlayerLog();
+        for (ReplayGhost replayGhost : ghostList) {
+            PlayerLog playerLog = replayGhost.ghostInfo.pollPlayerLog();
             if (playerLog == null) {
-                replay.remove();
+                replayGhost.remove();
                 continue;
             }
 
-            if (playerLog.world != null && replay.lastWorld != playerLog.world) replay.lastWorld = playerLog.world;
+            if (playerLog.world != null && replayGhost.lastWorld != playerLog.world) replayGhost.lastWorld = playerLog.world;
 
-            if (replay.ghost == null) {
-                if (!Objects.equals(replay.lastWorld.toString(), playerWorld.getRegistryKey().getValue().toString())) {
+            if (replayGhost.ghost == null) {
+                if (!Objects.equals(replayGhost.lastWorld.toString(), playerWorld.getRegistryKey().getValue().toString())) { //if the ghost's world is not client world
                     continue;
                 }
-                replay.summon(playerWorld, playerLog);
+                replayGhost.summon(playerWorld, playerLog);
             }
 
-            if (!Objects.equals(replay.lastWorld.toString(), playerWorld.getRegistryKey().getValue().toString())
-                    || !Objects.equals(replay.ghost.world.getRegistryKey().getValue().toString(), playerWorld.getRegistryKey().getValue().toString())) {
-                replay.remove();
+            if (!Objects.equals(replayGhost.lastWorld.toString(), playerWorld.getRegistryKey().getValue().toString()) //if the ghost's world is not client world
+                    || !Objects.equals(replayGhost.ghost.world.getRegistryKey().getValue().toString(), playerWorld.getRegistryKey().getValue().toString())) {
+                replayGhost.remove();
                 continue;
             }
 
-            replay.ghost.updateTrackedPositionAndAngles(
-                    playerLog.x == null ? replay.ghost.getX() : playerLog.x,
-                    playerLog.y == null ? replay.ghost.getY() : playerLog.y,
-                    playerLog.z == null ? replay.ghost.getZ() : playerLog.z,
-                    playerLog.yaw == null ? replay.ghost.yaw : playerLog.yaw,
-                    playerLog.pitch == null ? replay.ghost.pitch : playerLog.pitch, 1, true);
-            replay.ghost.setHeadYaw(playerLog.yaw == null ? replay.ghost.yaw : playerLog.yaw);
-            if (playerLog.pose != null) replay.ghost.setPose(playerLog.pose);
+            replayGhost.ghost.updateTrackedPositionAndAngles(
+                    playerLog.x == null ? replayGhost.ghost.getX() : playerLog.x,
+                    playerLog.y == null ? replayGhost.ghost.getY() : playerLog.y,
+                    playerLog.z == null ? replayGhost.ghost.getZ() : playerLog.z,
+                    playerLog.yaw == null ? replayGhost.ghost.yaw : playerLog.yaw,
+                    playerLog.pitch == null ? replayGhost.ghost.pitch : playerLog.pitch, 1, true);
+            replayGhost.ghost.setHeadYaw(playerLog.yaw == null ? replayGhost.ghost.yaw : playerLog.yaw);
+            if (playerLog.pose != null) replayGhost.ghost.setPose(playerLog.pose);
         }
     }
 
