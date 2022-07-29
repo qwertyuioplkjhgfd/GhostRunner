@@ -92,6 +92,10 @@ public class ReplayGhost {
 
     private static final ArrayList<ReplayGhost> ghostList = new ArrayList<>();
 
+    public static ArrayList<ReplayGhost> getGhostList() {
+        return ghostList;
+    }
+
     public static void insertBrains(Long seed) {
         ghostList.clear();
 
@@ -108,7 +112,10 @@ public class ReplayGhost {
         }
     }
 
-    //TODO sound
+    public static void addGhost(GhostInfo ghostInfo) {
+        ghostList.add(new ReplayGhost(ghostInfo));
+        Utils.downloadPlayerSkin(ghostInfo.getGhostData().getGhostUserUuid());
+    }
 
     public static void tickGhost() {
         if (ghostList.isEmpty()) return;

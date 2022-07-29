@@ -76,6 +76,31 @@ public class GhostInfo {
         }
     }
 
+    public static GhostInfo fromData(String category, float slot) {
+        Path path = GhostRunner.GHOSTS_PATH.resolve(category + slot);
+        path.toFile().mkdirs();
+
+        File grDataFile = new File(path.toFile(), ".grd");
+        File grTimelineFile = new File(path.toFile(), ".grt");
+
+        if (!grDataFile.exists()) throw new IllegalArgumentException("Not found a Record file");
+
+        GhostInfo ghost = new GhostInfo();
+        GhostData ghostData = GhostData.loadData(path);
+
+        try {
+            for (String s : Crypto.decrypt(FileUtils.readFileToString(grDataFile, StandardCharsets.UTF_8), ghostData.getKey()).split("&")) {
+                ghost.update(PlayerLog.of(s));
+            }
+
+            ghost.timeline = new Timeline(FileUtils.readFileToString(grTimelineFile, StandardCharsets.UTF_8));
+            ghost.ghostData = ghostData;
+            return ghost;
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Corrupted record files");
+        }
+    }
+
 
     public final Queue<PlayerLog> logData = new LinkedList<>();
     private Timeline timeline = new Timeline();
@@ -144,7 +169,7 @@ public class GhostInfo {
         boolean isSolo = MinecraftClient.getInstance().isInSingleplayer();
         new Thread(() -> {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(100);
             } catch (InterruptedException ignored) {
 
             }

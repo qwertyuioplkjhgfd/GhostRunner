@@ -2,11 +2,14 @@ package com.redlimerl.ghostrunner.mixin;
 
 import com.redlimerl.ghostrunner.GhostRunner;
 import com.redlimerl.ghostrunner.record.GhostInfo;
+import com.redlimerl.ghostrunner.record.ReplayGhost;
 import com.redlimerl.ghostrunner.record.data.GhostData;
 import com.redlimerl.ghostrunner.record.data.GhostType;
 import com.redlimerl.ghostrunner.util.Utils;
 import com.redlimerl.speedrunigt.SpeedRunIGT;
 import com.redlimerl.speedrunigt.timer.InGameTimer;
+import com.redlimerl.speedrunigt.timer.TimerStatus;
+import com.redlimerl.speedrunigt.timer.running.RunType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
@@ -43,8 +46,17 @@ public class ClientPlayNetworkHandlerMixin {
                     LOGGER.info("GhostRunner is now completing and saving in slot " + packet.getCategory().getName() + packet.getPitch());
                     stopRecording(packet.getCategory().getName(), packet.getPitch());
                     break;
+                case "minecraft:ambient.basalt_deltas.mood":
+                    LOGGER.info("GhostRunner is now replaying slot " + packet.getCategory().getName() + packet.getPitch());
+                    startReplaying(packet.getCategory().getName(), packet.getPitch());
+                    break;
             }
         }
+    }
+
+    private void startReplaying(String name, float pitch) {
+        GhostInfo ghostInfo = GhostInfo.fromData(name, pitch);
+        ReplayGhost.addGhost(ghostInfo);
     }
 
     private void stopRecording(String category, float slot) {
@@ -77,8 +89,6 @@ public class ClientPlayNetworkHandlerMixin {
                 true, //kek
                 false
         ));
-        InGameTimer.leave();
-        //InGameTimer.start();
-        InGameTimer.reset();
+        InGameTimer.start("null", RunType.SET_SEED);
     }
 }
