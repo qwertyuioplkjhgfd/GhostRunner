@@ -216,6 +216,10 @@ public class GhostData {
         return GHOSTS_PATH.resolve(uuid.toString());
     }
 
+    public Path getPath(String category, float slot) {
+        return GHOSTS_PATH.resolve(category + slot);
+    }
+
     public Difficulty getDifficulty() {
         return Difficulty.byName(difficulty);
     }

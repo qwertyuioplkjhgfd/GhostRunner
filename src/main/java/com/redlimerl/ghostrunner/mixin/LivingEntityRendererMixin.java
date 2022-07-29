@@ -22,7 +22,7 @@ public class LivingEntityRendererMixin {
                 entityModel.render(matrices, vertices, light, overlay, red, green, blue, SpeedRunOption.getOption(RunnerOptions.GHOST_OPACITY));
                 if (!GhostRunner.IS_USE_GHOST) GhostRunner.IS_USE_GHOST = true;
             }
-        }  else {
+        } else {
             entityModel.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         }
     }

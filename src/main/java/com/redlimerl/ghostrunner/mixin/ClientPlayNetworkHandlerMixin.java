@@ -5,10 +5,12 @@ import com.redlimerl.ghostrunner.record.GhostInfo;
 import com.redlimerl.ghostrunner.record.data.GhostData;
 import com.redlimerl.ghostrunner.record.data.GhostType;
 import com.redlimerl.ghostrunner.util.Utils;
+import com.redlimerl.speedrunigt.SpeedRunIGT;
 import com.redlimerl.speedrunigt.timer.InGameTimer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -34,19 +36,20 @@ public class ClientPlayNetworkHandlerMixin {
         if (packet.getVolume() == 0f) {
             switch (packet.getSoundId().toString()) {
                 case "minecraft:ambient.basalt_deltas.additions":
-                    LOGGER.info("Ghost is now recording!");
+                    LOGGER.info("GhostRunner is now recording!");
                     startRecording();
                     break;
                 case "minecraft:ambient.basalt_deltas.loop":
-                    LOGGER.info("Ghost is now saving in slot " + packet.getPitch());
-                    stopRecording(packet.getPitch());
+                    LOGGER.info("GhostRunner is now completing and saving in slot " + packet.getCategory().getName() + packet.getPitch());
+                    stopRecording(packet.getCategory().getName(), packet.getPitch());
                     break;
             }
         }
     }
 
-    private void stopRecording(float slot) {
-        
+    private void stopRecording(String category, float slot) {
+        InGameTimer.complete();
+        GhostInfo.INSTANCE.savePractice(category, slot);
     }
 
     private void startRecording() {
@@ -74,6 +77,8 @@ public class ClientPlayNetworkHandlerMixin {
                 true, //kek
                 false
         ));
+        InGameTimer.leave();
+        //InGameTimer.start();
         InGameTimer.reset();
     }
 }

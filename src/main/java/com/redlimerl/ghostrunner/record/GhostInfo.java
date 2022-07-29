@@ -33,19 +33,20 @@ public class GhostInfo {
     public static GhostType currentGhostType = GhostType.RANDOM_SEED;
     static {
         InGameTimer.onComplete(igt -> {
-            InGameTimer timer = InGameTimer.getInstance();
-            MinecraftClient.getInstance().getToastManager().add(
-                    new GenericToast("IGT: "+InGameTimerUtils.timeToStringFormat(timer.getInGameTime()),
-                            "RTA: "+InGameTimerUtils.timeToStringFormat(timer.getRealTimeAttack()), new ItemStack(Items.DRAGON_EGG))
-            );
-            MinecraftClient.getInstance().getToastManager().add(
-                    new GenericToast("Category : " + timer.getCategory().getText().getString(),
-                            "Seed Type : " + currentGhostType.getContext(), null)
-            );
-            MinecraftClient.getInstance().getToastManager().add(
-                    new GenericToast("Seed : "+INSTANCE.ghostData.getSeed(), null,null)
-            );
-            INSTANCE.save();
+//            InGameTimer timer = InGameTimer.getInstance();
+//            MinecraftClient.getInstance().getToastManager().add(
+//                    new GenericToast("IGT: "+InGameTimerUtils.timeToStringFormat(timer.getInGameTime()),
+//                            "RTA: "+InGameTimerUtils.timeToStringFormat(timer.getRealTimeAttack()), new ItemStack(Items.DRAGON_EGG))
+//            );
+//            MinecraftClient.getInstance().getToastManager().add(
+//                    new GenericToast("Category : " + timer.getCategory().getText().getString(),
+//                            "Seed Type : " + currentGhostType.getContext(), null)
+//            );
+//            MinecraftClient.getInstance().getToastManager().add(
+//                    new GenericToast("Seed : "+INSTANCE.ghostData.getSeed(), null,null)
+//            );
+//            INSTANCE.save();
+            //TODO make this not exclusive to practice maps but whatever
         });
     }
 
@@ -139,9 +140,15 @@ public class GhostInfo {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void save() {
+    public void savePractice(String category, float slot) {
         boolean isSolo = MinecraftClient.getInstance().isInSingleplayer();
         new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ignored) {
+
+            }
+
             ghostData.setRealTimeAttack(getTimer().getRealTimeAttack());
             ghostData.setInGameTime(getTimer().getInGameTime());
             ghostData.setGhostCategory(getTimer().getCategory());
@@ -151,7 +158,7 @@ public class GhostInfo {
             ghostData.setGhostName(ghostData.getDefaultName());
             String playData = Crypto.encrypt(this.toDataString(), ghostData.getKey());
 
-            File ghostFile = ghostData.getPath().toFile();
+            File ghostFile = ghostData.getPath(category, slot).toFile();
             ghostFile.mkdirs();
 
             try {
