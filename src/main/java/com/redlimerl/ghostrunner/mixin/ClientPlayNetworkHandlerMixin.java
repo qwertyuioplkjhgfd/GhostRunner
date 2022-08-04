@@ -11,14 +11,19 @@ import com.redlimerl.speedrunigt.timer.InGameTimer;
 import com.redlimerl.speedrunigt.timer.TimerStatus;
 import com.redlimerl.speedrunigt.timer.running.RunType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -32,6 +37,8 @@ import static com.redlimerl.ghostrunner.GhostRunner.MOD_VERSION;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
+    @Shadow private MinecraftClient client;
+    @Shadow private ClientWorld world;
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Inject(method="onPlaySoundId", at=@At("TAIL"))
@@ -39,39 +46,57 @@ public class ClientPlayNetworkHandlerMixin {
         if (packet.getVolume() == 0f) {
             switch (packet.getSoundId().toString()) {
                 case "minecraft:ambient.basalt_deltas.additions":
-                    LOGGER.info("GhostRunner is now recording!");
                     startRecording();
                     break;
                 case "minecraft:ambient.basalt_deltas.loop":
-                    LOGGER.info("GhostRunner is now completing and saving in slot " + packet.getCategory().getName() + packet.getPitch());
                     stopRecording(packet.getCategory().getName(), packet.getPitch());
                     break;
                 case "minecraft:ambient.basalt_deltas.mood":
-                    LOGGER.info("GhostRunner is now replaying slot " + packet.getCategory().getName() + packet.getPitch());
                     startReplaying(packet.getCategory().getName(), packet.getPitch());
                     break;
-
-                //TODO import into slot
+                case "minecraft:ambient.cave":
+                    killGhosts();
+                    break;
+                case "minecraft:ambient.crimson_forest.additions":
+                    break;
+                case "ghostrunner:a":
+                    System.out.println("yay");
+                    break;
+                //pause
+                //import
+                //copy
+                //TODO import into slot, pause/resume, copy
             }
         }
     }
 
-    private void startReplaying(String name, float pitch) {
+    private void killGhosts() {
+        LOGGER.info("GhostRunner is now stopping replays");
+        ReplayGhost.getGhostList().clear();
+    }
 
-        GhostInfo ghostInfo = null;
+    private void startReplaying(String name, float pitch) {
+        LOGGER.info("GhostRunner is now replaying slot " + name + pitch);
+        GhostInfo ghostInfo;
         try {
             ghostInfo = GhostInfo.fromData(name, pitch);
+            ReplayGhost.addGhost(ghostInfo);
         } catch (IllegalArgumentException ignored) {
         }
-        ReplayGhost.addGhost(ghostInfo);
     }
 
     private void stopRecording(String category, float slot) {
-        InGameTimer.complete();
+        LOGGER.info("GhostRunner is now completing and saving in slot " + category + slot);
+//        InGameTimer.complete();
         GhostInfo.INSTANCE.savePractice(category, slot);
+        if (client.player != null) {
+            client.player.sendChatMessage("/trigger mod_gr_rta set " + InGameTimer.getInstance().getRealTimeAttack());
+            client.player.sendChatMessage("/trigger mod_gr_igt set " + InGameTimer.getInstance().getInGameTime());
+        }
     }
 
     private void startRecording() {
+        LOGGER.info("GhostRunner is now recording!");
         GhostInfo recInfo = GhostInfo.INSTANCE;
         recInfo.clear();
         recInfo.setGhostData(new GhostData(
@@ -96,6 +121,11 @@ public class ClientPlayNetworkHandlerMixin {
                 true, //kek
                 false
         ));
-        InGameTimer.start("null", RunType.SET_SEED);
+        IntegratedServer server = client.getServer();
+        if (server != null) {
+            String folderName = server.getIconFile().getParentFile().getName();
+            System.out.println(folderName);
+            InGameTimer.start(folderName, RunType.SET_SEED);
+        }
     }
 }

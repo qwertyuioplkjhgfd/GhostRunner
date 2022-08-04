@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.OptionalLong;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class GhostInfo {
 
@@ -101,7 +102,7 @@ public class GhostInfo {
     }
 
 
-    public final Queue<PlayerLog> logData = new LinkedList<>();
+    public final Queue<PlayerLog> logData = new ConcurrentLinkedQueue<>();
     private Timeline timeline = new Timeline();
     private GhostData ghostData = null;
 
