@@ -46,7 +46,6 @@ public class GhostInfo {
 //                    new GenericToast("Seed : "+INSTANCE.ghostData.getSeed(), null,null)
 //            );
 //            INSTANCE.save();
-            //TODO make this not exclusive to practice maps but whatever
         });
     }
 

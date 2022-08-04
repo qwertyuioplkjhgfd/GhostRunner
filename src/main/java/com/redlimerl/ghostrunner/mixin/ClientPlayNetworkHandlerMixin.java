@@ -50,12 +50,19 @@ public class ClientPlayNetworkHandlerMixin {
                     LOGGER.info("GhostRunner is now replaying slot " + packet.getCategory().getName() + packet.getPitch());
                     startReplaying(packet.getCategory().getName(), packet.getPitch());
                     break;
+
+                //TODO import into slot
             }
         }
     }
 
     private void startReplaying(String name, float pitch) {
-        GhostInfo ghostInfo = GhostInfo.fromData(name, pitch);
+
+        GhostInfo ghostInfo = null;
+        try {
+            ghostInfo = GhostInfo.fromData(name, pitch);
+        } catch (IllegalArgumentException ignored) {
+        }
         ReplayGhost.addGhost(ghostInfo);
     }
 
