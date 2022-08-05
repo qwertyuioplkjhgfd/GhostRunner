@@ -148,6 +148,9 @@ public class ClientPlayNetworkHandlerMixin {
 
     private void killGhosts() {
         LOGGER.info("GhostRunner is now stopping replays");
+        for (ReplayGhost replayGhost : ReplayGhost.getGhostList()) {
+            replayGhost.remove();
+        }
         ReplayGhost.getGhostList().clear();
     }
 
