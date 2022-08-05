@@ -163,6 +163,10 @@ public class ClientPlayNetworkHandlerMixin {
 
     private void saveRecording(String category, float slot) {
         LOGGER.info("GhostRunner is now completing and saving in slot " + category + slot);
+        if (!GhostRunner.recording) {
+            LOGGER.error("Tried to save a ghost when not recording");
+            return;
+        }
 //        InGameTimer.complete();
         GhostInfo.INSTANCE.savePractice(category, slot);
         if (client.player != null) {
