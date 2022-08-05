@@ -91,6 +91,7 @@ public class ReplayGhost {
     }
 
     private static final ArrayList<ReplayGhost> ghostList = new ArrayList<>();
+    public static boolean paused;
 
     public static ArrayList<ReplayGhost> getGhostList() {
         return ghostList;
@@ -118,7 +119,7 @@ public class ReplayGhost {
     }
 
     public static void tickGhost() {
-        if (ghostList.isEmpty()) return;
+        if (ghostList.isEmpty() || paused) return;
 
         MinecraftClient client = MinecraftClient.getInstance();
 

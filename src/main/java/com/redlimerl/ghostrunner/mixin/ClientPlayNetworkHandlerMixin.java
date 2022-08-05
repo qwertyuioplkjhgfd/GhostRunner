@@ -43,31 +43,63 @@ public class ClientPlayNetworkHandlerMixin {
 
     @Inject(method="onPlaySoundId", at=@At("TAIL"))
     private void onPlaySoundId(PlaySoundIdS2CPacket packet, CallbackInfo ci) {
-        if (packet.getVolume() == 0f) {
-            switch (packet.getSoundId().toString()) {
-                case "minecraft:ambient.basalt_deltas.additions":
-                    startRecording();
-                    break;
-                case "minecraft:ambient.basalt_deltas.loop":
-                    stopRecording(packet.getCategory().getName(), packet.getPitch());
-                    break;
-                case "minecraft:ambient.basalt_deltas.mood":
-                    startReplaying(packet.getCategory().getName(), packet.getPitch());
-                    break;
-                case "minecraft:ambient.cave":
-                    killGhosts();
-                    break;
-                case "minecraft:ambient.crimson_forest.additions":
-                    break;
-                case "ghostrunner:a":
-                    System.out.println("yay");
-                    break;
-                //pause
-                //import
-                //copy
-                //TODO import into slot, pause/resume, copy
-            }
+        switch (packet.getSoundId().toString()) {
+            case "ghostrunner:start_recording":
+                startRecording();
+                break;
+            case "ghostrunner:save_recording":
+                stopRecording(packet.getCategory().getName(), packet.getPitch());
+                break;
+            case "ghostrunner:replay_recording":
+                startReplaying(packet.getCategory().getName(), packet.getPitch());
+                break;
+            case "ghostrunner:stop_playback":
+                killGhosts();
+                break;
+            case "ghostrunner:pause_playback":
+                pausePlayback();
+                break;
+            case "ghostrunner:resume_playback":
+                resumePlayback();
+                break;
+            case "ghostrunner:toggle_playback":
+                togglePlayback();
+                break;
+            case "ghostrunner:import_to":
+                importTo(packet.getCategory().getName(), packet.getPitch());
+                break;
+            case "ghostrunner:copy_recording":
+                break;
+            case "ghostrunner:paste_recording":
+                break;
+            case "ghostrunner:ping":
+                client.player.sendChatMessage("/trigger mod_gr_ping set 1");
+                break;
+                //TODO implement
         }
+    }
+
+    private void importTo(String category, float slot) {
+        LOGGER.info("GhostRunner is now prompting ghost import into slot " + category + slot);
+        Utils.promptImportGhost(GhostRunner.GHOSTS_PATH.resolve(category + slot));
+    }
+
+    private void togglePlayback() {
+        if (ReplayGhost.paused) {
+            resumePlayback();
+        } else {
+            pausePlayback();
+        }
+    }
+
+    private void resumePlayback() {
+        LOGGER.info("GhostRunner is now resuming playback");
+        ReplayGhost.paused = false;
+    }
+
+    private void pausePlayback() {
+        LOGGER.info("GhostRunner is now pausing playback");
+        ReplayGhost.paused = true;
     }
 
     private void killGhosts() {
@@ -90,6 +122,7 @@ public class ClientPlayNetworkHandlerMixin {
 //        InGameTimer.complete();
         GhostInfo.INSTANCE.savePractice(category, slot);
         if (client.player != null) {
+            //TODO check if /tirgger autocompletes these
             client.player.sendChatMessage("/trigger mod_gr_rta set " + InGameTimer.getInstance().getRealTimeAttack());
             client.player.sendChatMessage("/trigger mod_gr_igt set " + InGameTimer.getInstance().getInGameTime());
         }

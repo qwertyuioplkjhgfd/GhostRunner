@@ -140,18 +140,7 @@ public class GhostListScreen extends Screen {
             if (ghostList.getSelected() != null && ghostList.getSelected().ghost != null) {
                 GhostData ghost = ghostList.getSelected().ghost;
                 button.active = false;
-                new Thread(() -> {
-                    int i = 0;
-                    if (GhostRunner.GHOST_SHARE_PATH.resolve(ghost.getGhostName() + ".mcg").toFile().exists()) {
-                        i++;
-                        while (GhostRunner.GHOST_SHARE_PATH.resolve(ghost.getGhostName() + "_" + i + ".mcg").toFile().exists()) {
-                            i++;
-                        }
-                    }
-                    TarGzUtil.createTarGzipFolder(ghost.getPath(), GhostRunner.GHOST_SHARE_PATH.resolve(ghost.getGhostName() + (i > 0 ? "_"+i : "") + ".mcg"));
-                    Util.getOperatingSystem().open(GhostRunner.GHOST_SHARE_PATH.toFile());
-                    client.execute(() -> exportButton.active = true);
-                }).start();
+                new Thread(() -> export(ghost)).start();
             }
         }));
 
@@ -173,6 +162,19 @@ public class GhostListScreen extends Screen {
         setInitialFocus(this.searchBox);
 
         ghostSelected(false);
+    }
+
+    private void export(GhostData ghost) {
+        int i = 0;
+        if (GhostRunner.GHOST_SHARE_PATH.resolve(ghost.getGhostName() + ".mcg").toFile().exists()) {
+            i++;
+            while (GhostRunner.GHOST_SHARE_PATH.resolve(ghost.getGhostName() + "_" + i + ".mcg").toFile().exists()) {
+                i++;
+            }
+        }
+        TarGzUtil.createTarGzipFolder(ghost.getPath(), GhostRunner.GHOST_SHARE_PATH.resolve(ghost.getGhostName() + (i > 0 ? "_"+i : "") + ".mcg"));
+        Util.getOperatingSystem().open(GhostRunner.GHOST_SHARE_PATH.toFile());
+        client.execute(() -> exportButton.active = true);
     }
 
     @Override

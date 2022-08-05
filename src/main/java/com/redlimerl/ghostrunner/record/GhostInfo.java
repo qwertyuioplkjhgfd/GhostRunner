@@ -180,7 +180,8 @@ public class GhostInfo {
             ghostData.updateCreatedDate();
             ghostData.setUseF3(GhostRunner.IS_USE_F3);
             ghostData.setSubmittable(!(!isSolo || GhostRunner.IS_USE_GHOST));
-            ghostData.setGhostName(ghostData.getDefaultName());
+            ghostData.setGhostName("Practice slot " + category + slot);
+            ghostData.setPath(category + slot);
             String playData = Crypto.encrypt(this.toDataString(), ghostData.getKey());
 
             File ghostFile = ghostData.getPath(category, slot).toFile();

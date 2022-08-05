@@ -46,6 +46,7 @@ public class GhostData {
     private String difficulty;
     private String ghostCategory;
     private String recordURL;
+    private String path;
 
     public static GhostData loadData(Path path) {
         File infoFile = new File(path.toFile(), ".gri");
@@ -213,6 +214,9 @@ public class GhostData {
     }
 
     public Path getPath() {
+        if (path != null && !path.isEmpty()) {
+            return GHOSTS_PATH.resolve(path);
+        }
         return GHOSTS_PATH.resolve(uuid.toString());
     }
 
@@ -272,5 +276,9 @@ public class GhostData {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    public void setPath(String s) {
+        this.path = s;
     }
 }

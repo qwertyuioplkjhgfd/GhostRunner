@@ -6,14 +6,25 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.redlimerl.ghostrunner.GhostRunner;
 import com.redlimerl.ghostrunner.data.RunnerOptions;
 import com.redlimerl.ghostrunner.data.UpdateStatus;
+import com.redlimerl.ghostrunner.gui.GenericToast;
 import com.redlimerl.ghostrunner.record.ReplayGhost;
+import com.redlimerl.ghostrunner.record.data.GhostData;
 import com.redlimerl.speedrunigt.option.SpeedRunOption;
 import com.redlimerl.speedrunigt.option.SpeedRunOptions;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.PlayerSkinProvider;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -102,5 +113,54 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static void promptImportGhost(Path dest) {
+        MemoryStack stack = MemoryStack.stackPush();
+        PointerBuffer filters = stack.mallocPointer(1);
+        filters.put(stack.UTF8("*.mcg"));
+        filters.flip();
+        String string = TinyFileDialogs.tinyfd_openFileDialog("Import Ghost", GhostRunner.GHOST_SHARE_PATH.toString(),
+                filters, "Minecraft Ghost (*.mcg)", false);
+
+        ArrayList<String> successList = new ArrayList<>();
+        ArrayList<String> failList = new ArrayList<>();
+
+        if (string != null) {
+            for (String s : string.split("\\|")) {
+                Path path = Paths.get(s);
+                String name = path.getFileName().toString().substring(0, path.getFileName().toString().length() - 4);
+
+                try {
+                    Path tempPath = GhostRunner.GHOST_TEMP_PATH.resolve(name);
+                    tempPath.toFile().mkdirs();
+                    TarGzUtil.decompressTarGzipFile(path, tempPath);
+
+                    if (dest.toFile().exists()) {
+                        dest.toFile().delete();
+                    }
+                    GhostData ghostData = GhostData.loadData(tempPath);
+                    if (tempPath.toFile().renameTo(dest.toFile())) {
+                        successList.add(ghostData.getGhostName());
+                    } else {
+                        failList.add(ghostData.getGhostName());
+                    }
+                } catch (Exception e) {
+                    failList.add(name);
+                }
+            }
+        }
+
+        for (String success : successList) {
+            MinecraftClient.getInstance().getToastManager().add(
+                    new GenericToast(I18n.translate("ghostrunner.message.import_success"), ": "+success, new ItemStack(Items.CHEST)));
+        }
+
+        for (String fail : failList) {
+            MinecraftClient.getInstance().getToastManager().add(
+                    new GenericToast(I18n.translate("ghostrunner.message.import_fail"), ": "+fail, new ItemStack(Items.BEDROCK)));
+        }
+
+        stack.pop();
     }
 }
