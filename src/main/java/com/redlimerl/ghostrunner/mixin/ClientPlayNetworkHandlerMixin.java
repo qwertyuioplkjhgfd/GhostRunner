@@ -1,5 +1,8 @@
 package com.redlimerl.ghostrunner.mixin;
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.suggestion.Suggestion;
 import com.redlimerl.ghostrunner.GhostRunner;
 import com.redlimerl.ghostrunner.record.GhostInfo;
 import com.redlimerl.ghostrunner.record.ReplayGhost;
@@ -9,8 +12,12 @@ import com.redlimerl.ghostrunner.util.Utils;
 import com.redlimerl.speedrunigt.timer.InGameTimer;
 import com.redlimerl.speedrunigt.timer.running.RunType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.Difficulty;
@@ -128,9 +135,20 @@ public class ClientPlayNetworkHandlerMixin {
 //        InGameTimer.complete();
         GhostInfo.INSTANCE.savePractice(category, slot);
         if (client.player != null) {
-            //TODO check if /tirgger autocompletes these
-            client.player.sendChatMessage("/trigger mod_gr_rta set " + InGameTimer.getInstance().getRealTimeAttack());
-            client.player.sendChatMessage("/trigger mod_gr_igt set " + InGameTimer.getInstance().getInGameTime());
+            CommandContextBuilder<CommandSource> builder = new CommandContextBuilder<>(null, null, null, 0);
+
+            client.getNetworkHandler().getCommandSource().getCompletions(builder.build("/trigger "), null).thenAccept(suggestions -> {
+                for (Suggestion suggestion : suggestions.getList()) {
+                    switch (suggestion.getText()) {
+                        case "mod_gr_rta":
+                            client.player.sendChatMessage("/trigger mod_gr_rta set " + InGameTimer.getInstance().getRealTimeAttack());
+                            break;
+                        case "mod_gr_igt":
+                            client.player.sendChatMessage("/trigger mod_gr_igt set " + InGameTimer.getInstance().getInGameTime());
+                            break;
+                    }
+                }
+            });
         }
     }
 
