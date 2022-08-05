@@ -1,5 +1,6 @@
 package com.redlimerl.ghostrunner.mixin;
 
+import com.google.common.io.Files;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.suggestion.Suggestion;
@@ -21,6 +22,7 @@ import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.Difficulty;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +33,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -43,7 +47,9 @@ public class ClientPlayNetworkHandlerMixin {
     @Shadow private MinecraftClient client;
     @Shadow private ClientWorld world;
 
-    @Shadow @Final private static Logger LOGGER;
+    private static final Logger LOGGER = LogManager.getLogger("GhostRunner");
+
+    private String clipboard;
 
     @Inject(method="onPlaySoundId", at=@At("TAIL"))
     private void onPlaySoundId(PlaySoundIdS2CPacket packet, CallbackInfo ci) {
@@ -76,13 +82,38 @@ public class ClientPlayNetworkHandlerMixin {
                 importTo(packet.getCategory().getName(), packet.getPitch());
                 break;
             case "ghostrunner:copy_recording":
+                copy(packet.getCategory().getName(), packet.getPitch());
                 break;
             case "ghostrunner:paste_recording":
+                paste(packet.getCategory().getName(), packet.getPitch());
                 break;
             case "ghostrunner:ping":
                 client.player.sendChatMessage("/trigger mod_gr_ping set 1");
                 break;
                 //TODO implement
+        }
+    }
+
+    private void paste(String name, float pitch) {
+        if (clipboard == null) {
+            LOGGER.warn("Tried pasting empty clipboard");
+            return;
+        }
+        LOGGER.info("Pasting slot " + clipboard + " into " + name + pitch);
+        try {
+            File srcFile = GhostRunner.GHOSTS_PATH.resolve(clipboard).toFile();
+            File destFile = GhostRunner.GHOSTS_PATH.resolve(name + pitch).toFile();
+            FileUtils.copyDirectory(srcFile, destFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void copy(String name, float pitch) {
+        LOGGER.info("Copying slot " + name + pitch);
+        clipboard = name + pitch;
+        if (!GhostRunner.GHOSTS_PATH.resolve(clipboard).toFile().exists()) {
+            LOGGER.warn("Ghost " + clipboard + " not found in ghosts folder.");
         }
     }
 
