@@ -67,6 +67,7 @@ public class GhostRunner implements ClientModInitializer {
     public static Difficulty MINIMUM_DIFFICULTY = Difficulty.HARD;
 
     public static final UpdateStatus UPDATE_STATUS = new UpdateStatus();
+    public static boolean recording = false;
 
     static {
         if (FabricLoader.getInstance().getModContainer(MOD_ID).isPresent()) {

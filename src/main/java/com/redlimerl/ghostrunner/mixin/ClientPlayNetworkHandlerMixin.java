@@ -6,18 +6,13 @@ import com.redlimerl.ghostrunner.record.ReplayGhost;
 import com.redlimerl.ghostrunner.record.data.GhostData;
 import com.redlimerl.ghostrunner.record.data.GhostType;
 import com.redlimerl.ghostrunner.util.Utils;
-import com.redlimerl.speedrunigt.SpeedRunIGT;
 import com.redlimerl.speedrunigt.timer.InGameTimer;
-import com.redlimerl.speedrunigt.timer.TimerStatus;
 import com.redlimerl.speedrunigt.timer.running.RunType;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -47,8 +42,11 @@ public class ClientPlayNetworkHandlerMixin {
             case "ghostrunner:start_recording":
                 startRecording();
                 break;
+            case "ghostrunner:stop_recording":
+                stopRecording();
+                break;
             case "ghostrunner:save_recording":
-                stopRecording(packet.getCategory().getName(), packet.getPitch());
+                saveRecording(packet.getCategory().getName(), packet.getPitch());
                 break;
             case "ghostrunner:replay_recording":
                 startReplaying(packet.getCategory().getName(), packet.getPitch());
@@ -77,6 +75,12 @@ public class ClientPlayNetworkHandlerMixin {
                 break;
                 //TODO implement
         }
+    }
+
+    private void stopRecording() {
+        LOGGER.info("GhostRunner is now stopping recording");
+        InGameTimer.complete();
+        GhostRunner.recording = false;
     }
 
     private void importTo(String category, float slot) {
@@ -117,7 +121,7 @@ public class ClientPlayNetworkHandlerMixin {
         }
     }
 
-    private void stopRecording(String category, float slot) {
+    private void saveRecording(String category, float slot) {
         LOGGER.info("GhostRunner is now completing and saving in slot " + category + slot);
 //        InGameTimer.complete();
         GhostInfo.INSTANCE.savePractice(category, slot);
@@ -130,6 +134,7 @@ public class ClientPlayNetworkHandlerMixin {
 
     private void startRecording() {
         LOGGER.info("GhostRunner is now recording!");
+        GhostRunner.recording = true;
         GhostInfo recInfo = GhostInfo.INSTANCE;
         recInfo.clear();
         recInfo.setGhostData(new GhostData(
