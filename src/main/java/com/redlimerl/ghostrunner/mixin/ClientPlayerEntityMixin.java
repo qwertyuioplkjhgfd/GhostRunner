@@ -10,6 +10,7 @@ import com.redlimerl.speedrunigt.timer.TimerStatus;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -38,6 +39,11 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity {
                     GhostRunner.MINIMUM_DIFFICULTY = world.getDifficulty();
                     GhostInfo.INSTANCE.getGhostData().setDifficulty(GhostRunner.MINIMUM_DIFFICULTY);
                 }
+            }
+            if (GhostInfo.INSTANCE.logData.size() > 60*60*20) {
+                client.player.sendMessage(Text.of("[GhostRunner] Recording stopped due to 1 hour limit"), false);
+                InGameTimer.complete();
+                GhostRunner.recording = false;
             }
         }
 

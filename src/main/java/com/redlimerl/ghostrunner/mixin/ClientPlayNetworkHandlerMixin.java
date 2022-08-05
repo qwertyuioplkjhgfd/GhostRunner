@@ -17,6 +17,7 @@ import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,7 +35,8 @@ import static com.redlimerl.ghostrunner.GhostRunner.MOD_VERSION;
 public class ClientPlayNetworkHandlerMixin {
     @Shadow private MinecraftClient client;
     @Shadow private ClientWorld world;
-    private static final Logger LOGGER = LogManager.getLogger();
+
+    @Shadow @Final private static Logger LOGGER;
 
     @Inject(method="onPlaySoundId", at=@At("TAIL"))
     private void onPlaySoundId(PlaySoundIdS2CPacket packet, CallbackInfo ci) {
