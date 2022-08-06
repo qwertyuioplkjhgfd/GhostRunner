@@ -167,24 +167,24 @@ public class GhostInfo {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void savePractice(String category, float slot) {
         boolean isSolo = MinecraftClient.getInstance().isInSingleplayer();
+        ghostData.setRealTimeAttack(getTimer().getRealTimeAttack());
+        ghostData.setInGameTime(getTimer().getInGameTime());
+        ghostData.setGhostCategory(getTimer().getCategory());
+        ghostData.updateCreatedDate();
+        ghostData.setUseF3(GhostRunner.IS_USE_F3);
+        ghostData.setSubmittable(!(!isSolo || GhostRunner.IS_USE_GHOST));
+        ghostData.setGhostName("Practice slot " + category + slot);
+        ghostData.setPath(category + slot);
+        String playData = Crypto.encrypt(this.toDataString(), ghostData.getKey());
+
+        File ghostFile = ghostData.getPath().toFile();
+        String ghostDataStr = ghostData.toString();
+        String timelineStr = timeline.toString();
         new Thread(() -> {
-
-            ghostData.setRealTimeAttack(getTimer().getRealTimeAttack());
-            ghostData.setInGameTime(getTimer().getInGameTime());
-            ghostData.setGhostCategory(getTimer().getCategory());
-            ghostData.updateCreatedDate();
-            ghostData.setUseF3(GhostRunner.IS_USE_F3);
-            ghostData.setSubmittable(!(!isSolo || GhostRunner.IS_USE_GHOST));
-            ghostData.setGhostName("Practice slot " + category + slot);
-            ghostData.setPath(category + slot);
-            String playData = Crypto.encrypt(this.toDataString(), ghostData.getKey());
-
-            File ghostFile = ghostData.getPath(category, slot).toFile();
             ghostFile.mkdirs();
-
             try {
-                FileUtils.writeStringToFile(new File(ghostFile, ".gri"), ghostData.toString(), Charsets.UTF_8);
-                FileUtils.writeStringToFile(new File(ghostFile, ".grt"), timeline.toString(), Charsets.UTF_8);
+                FileUtils.writeStringToFile(new File(ghostFile, ".gri"), ghostDataStr, Charsets.UTF_8);
+                FileUtils.writeStringToFile(new File(ghostFile, ".grt"), timelineStr, Charsets.UTF_8);
                 FileUtils.writeStringToFile(new File(ghostFile, ".grd"), playData, Charsets.UTF_8);
             } catch (IOException e) {
                 e.printStackTrace();
