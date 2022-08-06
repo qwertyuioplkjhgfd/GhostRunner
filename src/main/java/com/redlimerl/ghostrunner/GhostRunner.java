@@ -23,6 +23,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.option.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -69,6 +70,9 @@ public class GhostRunner implements ClientModInitializer {
     public static final UpdateStatus UPDATE_STATUS = new UpdateStatus();
     public static boolean recording = false;
 
+    public static EntityRenderer defaultRenderer;
+    public static EntityRenderer slimRenderer;
+
     static {
         if (FabricLoader.getInstance().getModContainer(MOD_ID).isPresent()) {
             MOD_VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString().split("\\+")[0];
@@ -89,7 +93,11 @@ public class GhostRunner implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        EntityRendererRegistry.INSTANCE.register(GHOST_ENTITY_TYPE, (manager, context) -> new GhostEntity.Renderer(manager));
+        EntityRendererRegistry.INSTANCE.register(GHOST_ENTITY_TYPE, (manager, context) -> {
+            defaultRenderer = new GhostEntity.Renderer(manager, false);
+            slimRenderer = new GhostEntity.Renderer(manager, false);
+            return defaultRenderer;
+        });
         FabricDefaultAttributeRegistry.register(GHOST_ENTITY_TYPE,
                 GhostEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE));
 

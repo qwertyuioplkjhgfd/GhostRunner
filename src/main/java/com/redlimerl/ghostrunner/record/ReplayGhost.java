@@ -27,11 +27,16 @@ public class ReplayGhost {
 
     //고스트 스킨 목록
     private static final HashMap<UUID, Identifier> skins = new HashMap<>();
-    public static void addPlayerSkin(UUID uuid, Identifier id) {
+    private static final HashMap<UUID, String> models = new HashMap<>();
+    public static void addPlayerSkin(UUID uuid, Identifier id, String model) {
         skins.put(uuid, id);
+        models.put(uuid, model);
     }
     public static Identifier getPlayerSkin(UUID uuid) {
         return skins.getOrDefault(uuid, DefaultSkinHelper.getTexture());
+    }
+    public static String getPlayerModel(UUID uuid) {
+        return models.getOrDefault(uuid, "default");
     }
 
     //선택한 고스트 목록
@@ -173,6 +178,7 @@ public class ReplayGhost {
         GhostEntity entity = new GhostEntity(GhostRunner.GHOST_ENTITY_TYPE, world);
         entity.refreshPositionAndAngles(log.x == null ? 0 : log.x, log.y == null ? 0 : log.y, log.z == null ? 0 : log.z, 0f, 0f);
         entity.setTargetSkinUuid(ghostInfo.getGhostData().getGhostUserUuid());
+        entity.model = getPlayerModel(ghostInfo.getGhostData().getGhostUserUuid());
         world.addEntity(entity.getEntityId(), entity);
         ghost = entity;
     }

@@ -57,8 +57,11 @@ public class Utils {
                     Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> minecraftProfileTexture = skinProvider.getTextures(profile);
 
                     if (minecraftProfileTexture != null) {
-                        Identifier skin = skinProvider.loadSkin(minecraftProfileTexture.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
-                        ReplayGhost.addPlayerSkin(uuid, skin);
+                        MinecraftProfileTexture profileTexture = minecraftProfileTexture.get(MinecraftProfileTexture.Type.SKIN);
+                        Identifier skin = skinProvider.loadSkin(profileTexture, MinecraftProfileTexture.Type.SKIN);
+                        String model = profileTexture.getMetadata("model");
+
+                        ReplayGhost.addPlayerSkin(uuid, skin, model);
                     }
                 }
             } catch (Exception e) {

@@ -168,11 +168,6 @@ public class GhostInfo {
     public void savePractice(String category, float slot) {
         boolean isSolo = MinecraftClient.getInstance().isInSingleplayer();
         new Thread(() -> {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {
-
-            }
 
             ghostData.setRealTimeAttack(getTimer().getRealTimeAttack());
             ghostData.setInGameTime(getTimer().getInGameTime());

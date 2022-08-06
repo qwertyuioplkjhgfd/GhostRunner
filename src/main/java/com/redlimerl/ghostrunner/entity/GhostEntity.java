@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class GhostEntity extends LivingEntity {
-
+    public String model = "default";
     public static HashMap<UUID, UUID> ghostSkins = new HashMap<>();
 
     public GhostEntity(EntityType<? extends LivingEntity> entityType, World world) {
@@ -35,8 +35,8 @@ public class GhostEntity extends LivingEntity {
     }
 
     public static class Model extends PlayerEntityModel<GhostEntity> {
-        public Model() {
-            super(0, false); //TODO
+        public Model(boolean thinArms) {
+            super(0, thinArms); //TODO
         }
     }
 
@@ -46,8 +46,8 @@ public class GhostEntity extends LivingEntity {
     }
 
     public static class Renderer extends LivingEntityRenderer<GhostEntity, Model> {
-        public Renderer(EntityRenderDispatcher dispatcher) {
-            super(dispatcher, new Model(), 0);
+        public Renderer(EntityRenderDispatcher dispatcher, boolean thinArms) {
+            super(dispatcher, new Model(thinArms), 0);
         }
 
         @Override
