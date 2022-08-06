@@ -220,7 +220,6 @@ public class ClientPlayNetworkHandlerMixin {
         IntegratedServer server = client.getServer();
         if (server != null) {
             String folderName = server.getIconFile().getParentFile().getName();
-            System.out.println(folderName);
             InGameTimer.start(folderName, RunType.SET_SEED);
         }
     }

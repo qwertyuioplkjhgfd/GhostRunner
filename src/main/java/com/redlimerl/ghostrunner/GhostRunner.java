@@ -95,7 +95,7 @@ public class GhostRunner implements ClientModInitializer {
     public void onInitializeClient() {
         EntityRendererRegistry.INSTANCE.register(GHOST_ENTITY_TYPE, (manager, context) -> {
             defaultRenderer = new GhostEntity.Renderer(manager, false);
-            slimRenderer = new GhostEntity.Renderer(manager, false);
+            slimRenderer = new GhostEntity.Renderer(manager, true);
             return defaultRenderer;
         });
         FabricDefaultAttributeRegistry.register(GHOST_ENTITY_TYPE,
