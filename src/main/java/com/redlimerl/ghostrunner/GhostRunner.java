@@ -2,6 +2,7 @@ package com.redlimerl.ghostrunner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.redlimerl.ghostrunner.config.GhostRunnerProperties;
 import com.redlimerl.ghostrunner.data.RunnerOptions;
 import com.redlimerl.ghostrunner.data.UpdateStatus;
 import com.redlimerl.ghostrunner.entity.GhostEntity;
@@ -93,6 +94,8 @@ public class GhostRunner implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        GhostRunnerProperties.init();
+
         EntityRendererRegistry.INSTANCE.register(GHOST_ENTITY_TYPE, (manager, context) -> {
             defaultRenderer = new GhostEntity.Renderer(manager, false);
             slimRenderer = new GhostEntity.Renderer(manager, true);

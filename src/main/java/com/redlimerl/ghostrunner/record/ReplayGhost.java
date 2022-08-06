@@ -1,6 +1,7 @@
 package com.redlimerl.ghostrunner.record;
 
 import com.redlimerl.ghostrunner.GhostRunner;
+import com.redlimerl.ghostrunner.config.GhostRunnerProperties;
 import com.redlimerl.ghostrunner.data.RunnerOptions;
 import com.redlimerl.ghostrunner.entity.GhostEntity;
 import com.redlimerl.ghostrunner.record.data.Timeline;
@@ -131,6 +132,13 @@ public class ReplayGhost {
         if (client.player == null || client.player.clientWorld == null) return;
         ClientWorld playerWorld = client.player.clientWorld;
 
+        ghostList.sort((o1, o2) -> {
+            long time1 = o1.ghostInfo.getGhostData().getInGameTime();
+            long time2 = o2.ghostInfo.getGhostData().getInGameTime();
+            return (int) (time1 - time2);
+        });
+
+        int i = 1;
         for (ReplayGhost replayGhost : ghostList) {
             PlayerLog playerLog = replayGhost.ghostInfo.pollPlayerLog();
             if (playerLog == null) {
@@ -145,6 +153,11 @@ public class ReplayGhost {
                     continue;
                 }
                 replayGhost.summon(playerWorld, playerLog);
+            }
+            if (replayGhost.ghost != null) {
+                if (GhostRunnerProperties.bootsEnabled) {
+                    replayGhost.ghost.setBoots(i);
+                }
             }
 
             if (!Objects.equals(replayGhost.lastWorld.toString(), playerWorld.getRegistryKey().getValue().toString()) //if the ghost's world is not client world
@@ -161,6 +174,8 @@ public class ReplayGhost {
                     playerLog.pitch == null ? replayGhost.ghost.pitch : playerLog.pitch, 1, true);
             replayGhost.ghost.setHeadYaw(playerLog.yaw == null ? replayGhost.ghost.yaw : playerLog.yaw);
             if (playerLog.pose != null) replayGhost.ghost.setPose(playerLog.pose);
+
+            i++;
         }
     }
 
