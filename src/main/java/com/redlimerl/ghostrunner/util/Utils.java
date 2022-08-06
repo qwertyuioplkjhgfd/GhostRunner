@@ -60,7 +60,6 @@ public class Utils {
                         MinecraftProfileTexture profileTexture = minecraftProfileTexture.get(MinecraftProfileTexture.Type.SKIN);
                         Identifier skin = skinProvider.loadSkin(profileTexture, MinecraftProfileTexture.Type.SKIN);
                         String model = profileTexture.getMetadata("model");
-                        System.out.println("grabbing skin model " + model);
 
                         ReplayGhost.addPlayerSkin(uuid, skin, model);
                     }

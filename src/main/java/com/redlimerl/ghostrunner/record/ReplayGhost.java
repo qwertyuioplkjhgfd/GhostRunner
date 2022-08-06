@@ -179,9 +179,6 @@ public class ReplayGhost {
         entity.refreshPositionAndAngles(log.x == null ? 0 : log.x, log.y == null ? 0 : log.y, log.z == null ? 0 : log.z, 0f, 0f);
         entity.setTargetSkinUuid(ghostInfo.getGhostData().getGhostUserUuid());
         entity.model = getPlayerModel(ghostInfo.getGhostData().getGhostUserUuid());
-        System.out.println("i am very f " + entity.model);
-        System.out.println("surely it's not the map " + models);
-        System.out.println("if this one works fine " + skins);
         world.addEntity(entity.getEntityId(), entity);
         ghost = entity;
     }
