@@ -156,7 +156,11 @@ public class ReplayGhost {
             }
             if (replayGhost.ghost != null) {
                 if (GhostRunnerProperties.bootsEnabled) {
-                    replayGhost.ghost.setBoots(i);
+                    if (ghostList.size() > 1) {
+                        replayGhost.ghost.setBoots(i);
+                    } else {
+                        replayGhost.ghost.clearBoots();
+                    }
                 }
             }
 

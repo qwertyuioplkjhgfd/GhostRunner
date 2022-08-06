@@ -45,22 +45,29 @@ public class GhostEntity extends LivingEntity {
     }
 
     private static ItemStack getBoots(int place) {
+        ItemStack res;
         DyeableArmorItem boots = (DyeableArmorItem) Items.LEATHER_BOOTS;
-        int color = 0x1d1d1d;
         switch (place) {
             case 1:
-                color = 0xffd700;
+                res = new ItemStack(Items.GOLDEN_BOOTS);
                 break;
             case 2:
-                color = 0xc0c0c0;
+                res = new ItemStack(Items.IRON_BOOTS);
                 break;
             case 3:
-                color = 0xcd7f32;
+                res = new ItemStack(Items.LEATHER_BOOTS);
+                boots.setColor(res, 0xcd7f32);
+                break;
+            default:
+                res = new ItemStack(Items.LEATHER_BOOTS);
+                boots.setColor(res, 0x1d1d1d);
                 break;
         }
-        ItemStack res = new ItemStack(Items.LEATHER_BOOTS);
-        boots.setColor(res, color);
         return res;
+    }
+
+    public void clearBoots() {
+        boots = ItemStack.EMPTY;
     }
 
     public static class Model extends PlayerEntityModel<GhostEntity> {
