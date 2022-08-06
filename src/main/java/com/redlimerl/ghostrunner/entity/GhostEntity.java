@@ -31,12 +31,18 @@ public class GhostEntity extends LivingEntity {
 
     public GhostEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
+        this.noClip = true;
     }
 
     public static class Model extends PlayerEntityModel<GhostEntity> {
         public Model() {
-            super(0, false);
+            super(0, false); //TODO
         }
+    }
+
+    @Override
+    protected void tickCramming() {
+
     }
 
     public static class Renderer extends LivingEntityRenderer<GhostEntity, Model> {
@@ -70,20 +76,6 @@ public class GhostEntity extends LivingEntity {
             super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
             GhostRenderFix.isRender = false;
         }
-        /*
-        java.lang.NullPointerException: Cannot invoke "net.minecraft.client.gl.Framebuffer.beginWrite(boolean)" because the return value of "net.minecraft.client.render.WorldRenderer.getEntityFramebuffer()" is null
-	at net.minecraft.client.render.RenderPhase.method_29703(RenderPhase.java:196)
-	at net.minecraft.client.render.RenderPhase.startDrawing(RenderPhase.java:214)
-	at com.google.common.collect.ImmutableList.forEach(ImmutableList.java:408)
-	at net.minecraft.client.render.RenderLayer$MultiPhase.method_23596(RenderLayer.java:754)
-	at net.minecraft.client.render.RenderPhase.startDrawing(RenderPhase.java:214)
-	at net.minecraft.client.render.RenderLayer.draw(RenderLayer.java:686)
-	at net.minecraft.client.render.VertexConsumerProvider$Immediate.draw(VertexConsumerProvider.java:82)
-	at net.minecraft.client.render.VertexConsumerProvider$Immediate.getBuffer(VertexConsumerProvider.java:44)
-	at net.minecraft.client.render.entity.LivingEntityRenderer.render(LivingEntityRenderer.java:116)
-	at com.redlimerl.ghostrunner.entity.GhostEntity$Renderer.render(GhostEntity.java:70)
-	at com.redlimerl.ghostrunner.entity.GhostEntity$Renderer.render(GhostEntity.java:42)
-         */
     }
 
     @Override
