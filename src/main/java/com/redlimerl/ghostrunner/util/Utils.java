@@ -146,6 +146,8 @@ public class Utils {
                         dest.toFile().delete();
                     }
                     GhostData ghostData = GhostData.loadData(tempPath);
+                    ghostData.setGhostName("[Import] " + ghostData.getGhostName());
+
                     if (tempPath.toFile().renameTo(dest.toFile())) {
                         successList.add(ghostData.getGhostName());
                     } else {

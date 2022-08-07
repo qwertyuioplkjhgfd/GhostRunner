@@ -103,17 +103,19 @@ public class GhostListScreen extends Screen {
                         TarGzUtil.decompressTarGzipFile(path, tempPath);
 
                         GhostData ghostData = GhostData.loadData(tempPath);
-                        if (ghostList.ghosts.stream().anyMatch(baseGhostData -> baseGhostData.getUuid() == ghostData.getUuid())) {
-                            tempPath.toFile().delete();
-                            failList.add(ghostData.getGhostName());
-                        } else {
+                        ghostData.setGhostName("[Import] " + ghostData.getGhostName());
+//                        if (ghostList.ghosts.stream().anyMatch(baseGhostData -> baseGhostData.getUuid() == ghostData.getUuid())) {
+//                            tempPath.toFile().delete();
+//                            failList.add(ghostData.getGhostName());
+//                        } else {
                             if (tempPath.toFile().renameTo(ghostData.getPath().toFile())) {
                                 successList.add(ghostData.getGhostName());
                             } else {
                                 failList.add(ghostData.getGhostName());
                             }
-                        }
+//                        }
                     } catch (Exception e) {
+                        e.printStackTrace();
                         failList.add(name);
                     }
                 }
