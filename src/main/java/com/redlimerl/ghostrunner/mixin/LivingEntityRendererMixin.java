@@ -9,8 +9,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(LivingEntityRenderer.class)
@@ -25,6 +27,14 @@ public class LivingEntityRendererMixin {
         } else {
             entityModel.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         }
+    }
+
+    @Redirect(method = "render*", at = @At(value="INVOKE", target="Lnet/minecraft/entity/LivingEntity;isSpectator()Z"))
+    private boolean renderFeatures(LivingEntity livingEntity) {
+        if (livingEntity instanceof GhostEntity) {
+            return false;
+        }
+        return livingEntity.isSpectator();
     }
 }
 

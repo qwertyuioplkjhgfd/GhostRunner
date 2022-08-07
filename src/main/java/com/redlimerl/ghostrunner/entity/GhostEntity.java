@@ -158,7 +158,7 @@ public class GhostEntity extends LivingEntity {
 
     @Override
     public boolean isSpectator() {
-        return false;
+        return true;
     }
 
     @Override

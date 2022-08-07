@@ -21,7 +21,9 @@ import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 public class ReplayGhost {
@@ -138,11 +140,13 @@ public class ReplayGhost {
             return (int) (time1 - time2);
         });
 
-        int i = 1;
+        Set<ReplayGhost> toRemove = new HashSet<>();
+        int place = 1;
         for (ReplayGhost replayGhost : ghostList) {
             PlayerLog playerLog = replayGhost.ghostInfo.pollPlayerLog();
             if (playerLog == null) {
                 replayGhost.remove();
+                toRemove.add(replayGhost);
                 continue;
             }
 
@@ -157,7 +161,7 @@ public class ReplayGhost {
             if (replayGhost.ghost != null) {
                 if (GhostRunnerProperties.bootsEnabled) {
                     if (ghostList.size() > 1) {
-                        replayGhost.ghost.setBoots(i);
+                        replayGhost.ghost.setBoots(place);
                     } else {
                         replayGhost.ghost.clearBoots();
                     }
@@ -179,8 +183,9 @@ public class ReplayGhost {
             replayGhost.ghost.setHeadYaw(playerLog.yaw == null ? replayGhost.ghost.yaw : playerLog.yaw);
             if (playerLog.pose != null) replayGhost.ghost.setPose(playerLog.pose);
 
-            i++;
+            place++;
         }
+        ghostList.removeAll(toRemove);
     }
 
 
