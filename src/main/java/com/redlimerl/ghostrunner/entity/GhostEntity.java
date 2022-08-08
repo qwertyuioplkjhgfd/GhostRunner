@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class GhostEntity extends LivingEntity {
-    public String model = "default";
     public static HashMap<UUID, UUID> ghostSkins = new HashMap<>();
 
     private ItemStack boots = ItemStack.EMPTY;
@@ -69,6 +68,10 @@ public class GhostEntity extends LivingEntity {
 
     public void clearBoots() {
         boots = ItemStack.EMPTY;
+    }
+
+    public String getModel() {
+        return ReplayGhost.getPlayerModel(ghostSkins.get(this.uuid));
     }
 
     public static class Model extends PlayerEntityModel<GhostEntity> {

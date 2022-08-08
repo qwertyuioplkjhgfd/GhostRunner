@@ -116,7 +116,7 @@ public class GhostRunner implements ClientModInitializer {
             }
         });
 
-        UPDATE_STATUS.check();
+//        UPDATE_STATUS.check();
     }
 
     public static void debug(Object obj) {

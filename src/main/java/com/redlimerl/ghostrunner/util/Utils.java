@@ -17,6 +17,7 @@ import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -143,7 +144,7 @@ public class Utils {
                     TarGzUtil.decompressTarGzipFile(path, tempPath);
 
                     if (dest.toFile().exists()) {
-                        dest.toFile().delete();
+                        FileUtils.deleteDirectory(dest.toFile());
                     }
                     GhostData ghostData = GhostData.loadData(tempPath);
                     ghostData.setGhostName("[Import] " + ghostData.getGhostName());
@@ -154,6 +155,7 @@ public class Utils {
                         failList.add(ghostData.getGhostName());
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     failList.add(name);
                 }
             }
