@@ -85,17 +85,18 @@ public class GhostRunner implements ClientModInitializer {
         GHOST_OLD_PATH.toFile().mkdirs();
     }
 
-    public static final EntityType<GhostEntity> GHOST_ENTITY_TYPE = Registry.register(
-            Registry.ENTITY_TYPE,
-            new Identifier(MOD_ID, "ghost"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, GhostEntity::new)
-                    .disableSaving().fireImmune().disableSummon()
-                    .dimensions(EntityDimensions.changing(0.6f, 1.8f)).build());
+    public static EntityType<GhostEntity> GHOST_ENTITY_TYPE;
 
     @Override
     public void onInitializeClient() {
         GhostRunnerProperties.init();
 
+        GHOST_ENTITY_TYPE = Registry.register(
+                Registry.ENTITY_TYPE,
+                new Identifier(MOD_ID, "ghost"),
+                FabricEntityTypeBuilder.create(SpawnGroup.MISC, GhostEntity::new)
+                        .disableSaving().fireImmune().disableSummon()
+                        .dimensions(EntityDimensions.changing(GhostRunnerProperties.smolGhosts ? 0.3f : 0.6f, GhostRunnerProperties.smolGhosts ? 0.9f : 1.8f)).build());
         EntityRendererRegistry.INSTANCE.register(GHOST_ENTITY_TYPE, (manager, context) -> {
             defaultRenderer = new GhostEntity.Renderer(manager, false);
             slimRenderer = new GhostEntity.Renderer(manager, true);
