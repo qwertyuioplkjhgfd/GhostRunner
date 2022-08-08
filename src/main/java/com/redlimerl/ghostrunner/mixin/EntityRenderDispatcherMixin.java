@@ -18,7 +18,6 @@ public class EntityRenderDispatcherMixin {
         if (entity instanceof GhostEntity) {
             GhostEntity entity1 = (GhostEntity) entity;
             if (entity1.getModel().equals("slim")) {
-                System.out.println("hello???");
                 cir.setReturnValue(GhostRunner.slimRenderer);
                 return;
             }

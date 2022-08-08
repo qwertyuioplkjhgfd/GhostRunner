@@ -121,7 +121,7 @@ public class GhostEntity extends LivingEntity {
         @Override
         protected void scale(GhostEntity entity, MatrixStack matrixStack, float amount) {
             float scale = GhostRunnerProperties.smolGhosts ? 0.5F : 0.9375F;
-            matrixStack.scale(scale, scale, scale);
+            matrixStack.scale(2, 0.5f, 2);
         }
     }
 
