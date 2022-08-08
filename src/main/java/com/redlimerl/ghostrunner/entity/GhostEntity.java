@@ -1,5 +1,6 @@
 package com.redlimerl.ghostrunner.entity;
 
+import com.redlimerl.ghostrunner.config.GhostRunnerProperties;
 import com.redlimerl.ghostrunner.record.ReplayGhost;
 import com.redlimerl.ghostrunner.render.GhostRenderFix;
 import net.minecraft.client.MinecraftClient;
@@ -116,7 +117,8 @@ public class GhostEntity extends LivingEntity {
 
         @Override
         protected void scale(GhostEntity entity, MatrixStack matrixStack, float amount) {
-            matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
+            float scale = GhostRunnerProperties.smolGhosts ? 0.5F : 0.9375F;
+            matrixStack.scale(scale, scale, scale);
         }
     }
 
